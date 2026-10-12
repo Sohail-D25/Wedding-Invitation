@@ -38,6 +38,7 @@ body {
     background: radial-gradient(ellipse at top, #174132 0%, var(--green) 65%);
     min-height: 100vh;
     overflow-x: hidden;
+    touch-action: pan-y;
 }
 
 body::before {
@@ -59,9 +60,10 @@ body::before {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    touch-action: none;
     z-index: 20;
 }
-
+    
 .page {
     position: relative;
     z-index: 1;
@@ -1330,9 +1332,8 @@ setInterval(updateCountdown, 1000);
 
 /* ==========================================
    BACKGROUND MUSIC - MP3
-   Put a licensed/authorized file named background-music.mp3
-   beside this HTML file in the GitHub repository.
-   Mobile browsers may require the visitor's first tap.
+   Stop music when the page is hidden or closed.
+   Resume when the visitor returns, where permitted.
 ========================================== */
 
 (function () {
@@ -1342,22 +1343,52 @@ setInterval(updateCountdown, 1000);
     audio.volume = 0.65;
     audio.loop = true;
 
+    let userHasInteracted = false;
+
     function startBackgroundMusic() {
+        userHasInteracted = true;
+
         if (!audio.paused) return;
+
         const playAttempt = audio.play();
+
         if (playAttempt && typeof playAttempt.catch === "function") {
             playAttempt.catch(function () {
-                // Browser autoplay rules or a missing MP3 can prevent playback.
-                // Retry on the next real user interaction.
+                // Playback may require another interaction on mobile browsers.
             });
         }
     }
 
-    // Try autoplay where permitted; otherwise start on the first interaction.
-    startBackgroundMusic();
-    document.addEventListener("pointerdown", startBackgroundMusic, { passive: true });
-    document.addEventListener("touchstart", startBackgroundMusic, { passive: true });
+    // Try autoplay where the browser permits it.
+    const initialPlay = audio.play();
+
+    if (initialPlay && typeof initialPlay.catch === "function") {
+        initialPlay.catch(function () {
+            // Wait for the visitor's first interaction.
+        });
+    }
+
+    // Start music on the first interaction if autoplay was blocked.
+    document.addEventListener("pointerdown", startBackgroundMusic, {
+        passive: true
+    });
+
     document.addEventListener("keydown", startBackgroundMusic);
+
+    // Stop music when the visitor leaves the page or switches away.
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            audio.pause();
+        } else if (userHasInteracted) {
+            startBackgroundMusic();
+        }
+    });
+
+    // Additional cleanup when navigating away from the invitation.
+    window.addEventListener("pagehide", function () {
+        audio.pause();
+    });
+
 })();
 
 </script>
