@@ -1224,7 +1224,7 @@ setInterval(updateCountdown, 1000);
 
         const messageLines = [
             "تأكيد الحضور ومباركة العروسين",
-            "كتب كتاب سهيل وشيماء",
+            "عقد قِران وزفاف سهيل وشيماء",
             "الاسم: " + guestName,
             "حالة الحضور: " + selectedAttendance.value,
             "كلمة التهنئة:",
@@ -1332,8 +1332,6 @@ setInterval(updateCountdown, 1000);
 
 /* ==========================================
    BACKGROUND MUSIC - MP3
-   Stop music when the page is hidden or closed.
-   Resume when the visitor returns, where permitted.
 ========================================== */
 
 (function () {
@@ -1343,52 +1341,56 @@ setInterval(updateCountdown, 1000);
     audio.volume = 0.65;
     audio.loop = true;
 
-    let userHasInteracted = false;
+    let userInteracted = false;
 
-    function startBackgroundMusic() {
-        userHasInteracted = true;
+    function tryPlayMusic() {
+        if (document.hidden || !audio.paused) return;
 
-        if (!audio.paused) return;
+        const attempt = audio.play();
 
-        const playAttempt = audio.play();
-
-        if (playAttempt && typeof playAttempt.catch === "function") {
-            playAttempt.catch(function () {
-                // Playback may require another interaction on mobile browsers.
+        if (attempt && typeof attempt.catch === "function") {
+            attempt.catch(function () {
+                // Browser may require a permitted user interaction.
             });
         }
     }
 
-    // Try autoplay where the browser permits it.
-    const initialPlay = audio.play();
+    // Try to start immediately.
+    tryPlayMusic();
 
-    if (initialPlay && typeof initialPlay.catch === "function") {
-        initialPlay.catch(function () {
-            // Wait for the visitor's first interaction.
-        });
+    // Retry on touch, scrolling, clicking, or keyboard interaction.
+    function onFirstInteraction() {
+        userInteracted = true;
+        tryPlayMusic();
     }
 
-    // Start music on the first interaction if autoplay was blocked.
-    document.addEventListener("pointerdown", startBackgroundMusic, {
+    document.addEventListener("touchstart", onFirstInteraction, {
         passive: true
     });
 
-    document.addEventListener("keydown", startBackgroundMusic);
+    document.addEventListener("scroll", onFirstInteraction, {
+        passive: true
+    });
 
-    // Stop music when the visitor leaves the page or switches away.
+    document.addEventListener("pointerdown", onFirstInteraction, {
+        passive: true
+    });
+
+    document.addEventListener("keydown", onFirstInteraction);
+
+    // Stop the music when the invitation is no longer visible.
     document.addEventListener("visibilitychange", function () {
         if (document.hidden) {
             audio.pause();
-        } else if (userHasInteracted) {
-            startBackgroundMusic();
+        } else if (userInteracted) {
+            tryPlayMusic();
         }
     });
 
-    // Additional cleanup when navigating away from the invitation.
+    // Stop playback when navigating away.
     window.addEventListener("pagehide", function () {
         audio.pause();
     });
-
 })();
 
 </script>
