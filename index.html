@@ -41,6 +41,18 @@ body {
     touch-action: pan-y;
 }
 
+body.invitation-locked {
+    overflow: hidden;
+}
+
+body.invitation-locked .page {
+    visibility: hidden;
+}
+
+body.invitation-open .page {
+    animation: invitationReveal 1.1s ease both;
+}
+
 body::before {
     content: "";
     position: fixed;
@@ -63,7 +75,282 @@ body::before {
     touch-action: none;
     z-index: 20;
 }
-    
+
+/* ==========================================
+   INTRO SCREEN
+========================================== */
+
+#invitationIntro {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    overflow-y: auto;
+    background:
+        radial-gradient(ellipse at center, #174132 0%, #0a291f 48%, #03130f 100%);
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+#invitationIntro::before,
+#invitationIntro::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(198, 161, 91, .55);
+    border-radius: 180px 180px 16px 16px;
+    pointer-events: none;
+}
+
+#invitationIntro::after {
+    inset: 21px;
+    border-color: rgba(198, 161, 91, .22);
+    border-radius: 165px 165px 12px 12px;
+}
+
+#invitationIntro.intro-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 430px);
+    text-align: center;
+    padding: 25px 0;
+    animation: introContentAppear 1.3s ease both;
+}
+
+.intro-bismillah {
+    font-family: "Amiri", serif;
+    color: var(--gold-light);
+    font-size: clamp(22px, 5vw, 29px);
+    line-height: 1.9;
+    margin-bottom: 12px;
+}
+
+.intro-ornament {
+    color: var(--gold);
+    font-size: 24px;
+    letter-spacing: 8px;
+    margin: 10px 0 15px;
+}
+
+.intro-title {
+    font-family: "Aref Ruqaa", serif;
+    color: var(--gold-light);
+    font-size: clamp(33px, 8vw, 46px);
+    line-height: 1.6;
+    text-shadow: 0 0 24px rgba(198, 161, 91, .2);
+}
+
+.intro-subtitle {
+    font-family: "Amiri", serif;
+    color: var(--cream-dark);
+    font-size: 20px;
+    line-height: 1.9;
+    margin: 4px 0 24px;
+}
+
+.intro-envelope {
+    position: relative;
+    width: min(82vw, 320px);
+    height: 205px;
+    margin: 0 auto 27px;
+    perspective: 1000px;
+    filter: drop-shadow(0 18px 25px rgba(0, 0, 0, .35));
+}
+
+.envelope-back {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--gold);
+    border-radius: 5px;
+    background: linear-gradient(145deg, #e9d6a8, #b78a3d);
+}
+
+.envelope-letter {
+    position: absolute;
+    z-index: 2;
+    left: 7%;
+    right: 7%;
+    top: 8%;
+    height: 83%;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #c6a15b;
+    background: linear-gradient(160deg, #fff8e8, #eee0bd);
+    color: #123b2d;
+    transition: transform 1s ease .4s;
+}
+
+.envelope-letter::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba(183, 138, 61, .45);
+    pointer-events: none;
+}
+
+.envelope-letter strong {
+    font-family: "Aref Ruqaa", serif;
+    font-size: 34px;
+    line-height: 1.6;
+}
+
+.envelope-letter span {
+    font-family: "Amiri", serif;
+    font-size: 19px;
+    line-height: 1.8;
+}
+
+.envelope-pocket {
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 5px;
+    pointer-events: none;
+}
+
+.envelope-pocket::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #d4b16b, #b78a3d);
+    clip-path: polygon(0 0, 50% 53%, 100% 0, 100% 100%, 0 100%);
+    border: 1px solid rgba(255, 244, 208, .6);
+}
+
+.envelope-pocket::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(30deg, #f2dfaf, #c6a15b);
+    clip-path: polygon(0 100%, 50% 44%, 100% 100%);
+}
+
+.envelope-flap {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 57%;
+    background: linear-gradient(180deg, #f1dfb5, #c6a15b);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform .9s ease;
+    backface-visibility: hidden;
+}
+
+.envelope-seal {
+    position: absolute;
+    z-index: 7;
+    left: 50%;
+    top: 48%;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    border: 2px solid #f1d99b;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d5b66d, #76511d);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .25),
+                inset 0 0 0 3px rgba(255, 240, 191, .15);
+    color: #fff0c8;
+    font-family: "Amiri", serif;
+    font-size: 27px;
+    transition: opacity .35s ease, transform .5s ease;
+}
+
+#invitationIntro.opening .envelope-flap {
+    transform: rotateX(180deg);
+}
+
+#invitationIntro.opening .envelope-letter {
+    transform: translateY(-105px);
+}
+
+#invitationIntro.opening .envelope-seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.3) rotate(30deg);
+}
+
+#openInvitationBtn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-width: 220px;
+    min-height: 58px;
+    padding: 14px 26px;
+    border: 1px solid #f1d99b;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e4c77f, #b78a3d);
+    color: #09251b;
+    font-family: "Cairo", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, .25);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+#openInvitationBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(198, 161, 91, .22);
+}
+
+#openInvitationBtn:focus-visible {
+    outline: 3px solid var(--cream);
+    outline-offset: 5px;
+}
+
+#openInvitationBtn:disabled {
+    cursor: default;
+    opacity: .8;
+}
+
+.intro-hint {
+    margin-top: 15px;
+    color: rgba(248, 240, 221, .75);
+    font-family: "Amiri", serif;
+    font-size: 16px;
+    line-height: 1.9;
+}
+
+.intro-music-note {
+    margin-top: 9px;
+    color: var(--gold-light);
+    font-size: 12px;
+    opacity: .85;
+}
+
+@keyframes introContentAppear {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes invitationReveal {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   MAIN INVITATION
+========================================== */
+
 .page {
     position: relative;
     z-index: 1;
@@ -312,12 +599,6 @@ body::before {
     background: rgba(255,255,255,.035);
 }
 
-@media (max-width: 480px) {
-    .buttons .button {
-        width: 100%;
-    }
-}
-
 .button.primary {
     color: var(--green);
     background: var(--gold);
@@ -339,7 +620,7 @@ body::before {
 }
 
 /* ==========================================
-   ELEGANT RSVP SECTION
+   RSVP SECTION
 ========================================== */
 
 .rsvp-section {
@@ -630,7 +911,23 @@ body::before {
     display: none;
 }
 
+/* ==========================================
+   MOBILE
+========================================== */
+
 @media (max-width: 480px) {
+    .intro-envelope {
+        height: 180px;
+    }
+
+    .envelope-letter strong {
+        font-size: 30px;
+    }
+
+    #openInvitationBtn {
+        width: min(100%, 290px);
+    }
+
     .page {
         width: calc(100% - 16px);
         padding-top: 12px;
@@ -714,23 +1011,81 @@ body::before {
     html {
         scroll-behavior: auto;
     }
+
+    #invitationIntro,
+    .intro-content,
+    .envelope-flap,
+    .envelope-letter,
+    .envelope-seal,
+    #openInvitationBtn,
+    body.invitation-open .page {
+        animation: none !important;
+        transition: none !important;
+    }
 }
 </style>
 
 </head>
 
-<body>
+<body class="invitation-locked">
+
+<!-- INTRO SCREEN -->
+
+<section id="invitationIntro" aria-label="افتح دعوة عقد القران">
+    <div class="intro-content">
+
+
+    <div class="intro-bismillah">
+        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+    </div>
+
+    <div class="intro-ornament">۞ ✦ ۞</div>
+
+    <h1 class="intro-title">دعوة من القلب</h1>
+
+    <p class="intro-subtitle">
+        إلى أحبابنا الغاليين<br>
+        يسعدنا أن نشارككم أجمل لحظات العمر
+    </p>
+
+    <div class="intro-envelope" aria-hidden="true">
+        <div class="envelope-back"></div>
+
+        <div class="envelope-letter">
+            <strong>سهيل ♥ شيماء</strong>
+            <span>دعوة عقد قِران وزفاف</span>
+            <span>٢٠ نوفمبر ٢٠٢٦</span>
+        </div>
+
+        <div class="envelope-pocket"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal">♥</div>
+    </div>
+
+    <button type="button" id="openInvitationBtn">
+        <span aria-hidden="true">✧</span>
+        <span>افتح الدعوة</span>
+        <span aria-hidden="true">✧</span>
+    </button>
+
+    <p class="intro-hint">اضغط لفتح الظرف واكتشاف دعوتنا</p>
+
+    <p class="intro-music-note">♫ ستبدأ الموسيقى عند فتح الدعوة ♫</p>
+</div>
+
+
+</section>
 
 <canvas id="sparkleCanvas" aria-hidden="true"></canvas>
 
-<!-- Add your legally obtained audio file named background-music.mp3 to this same folder -->
-<audio id="backgroundMusic" preload="auto" loop playsinline aria-hidden="true">
+<!-- BACKGROUND MUSIC -->
+
+<audio id="backgroundMusic" preload="auto" loop playsinline>
     <source src="background-music.mp3" type="audio/mpeg">
 </audio>
 
 <main class="page">
 <article class="card">
-
 
 <div class="top-label">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
 
@@ -744,42 +1099,48 @@ body::before {
         </linearGradient>
     </defs>
 
-    <g fill="none" stroke="url(#goldGradient)" stroke-width="1.7">
-        <path d="M55 202 V105 Q55 87 73 87 Q91 87 91 105 V202"/>
-        <path d="M47 87 L73 39 L99 87 Z"/>
-        <path d="M67 39 V24 L73 14 L79 24 V39"/>
-        <path d="M329 202 V105 Q329 87 347 87 Q365 87 365 105 V202"/>
-        <path d="M321 87 L347 39 L373 87 Z"/>
-        <path d="M341 39 V24 L347 14 L353 24 V39"/>
 
-        <path d="M104 202 V137 Q104 90 151 90 Q198 90 198 137 V202"/>
-        <path d="M222 202 V137 Q222 90 269 90 Q316 90 316 137 V202"/>
+<g fill="none" stroke="url(#goldGradient)" stroke-width="1.7">
+    <path d="M55 202 V105 Q55 87 73 87 Q91 87 91 105 V202"/>
+    <path d="M47 87 L73 39 L99 87 Z"/>
+    <path d="M67 39 V24 L73 14 L79 24 V39"/>
 
-        <path d="M135 202 V139 Q135 120 151 120 Q167 120 167 139 V202"/>
-        <path d="M253 202 V139 Q253 120 269 120 Q285 120 285 139 V202"/>
+    <path d="M329 202 V105 Q329 87 347 87 Q365 87 365 105 V202"/>
+    <path d="M321 87 L347 39 L373 87 Z"/>
+    <path d="M341 39 V24 L347 14 L353 24 V39"/>
 
-        <path d="M144 90 Q144 55 210 30 Q276 55 276 90"/>
-        <path d="M158 83 Q158 54 210 39 Q262 54 262 83"/>
-        <path d="M210 30 V15 L216 7 L222 15 V33"/>
-        <path d="M201 202 V149 Q201 121 210 121 Q219 121 219 149 V202"/>
+    <path d="M104 202 V137 Q104 90 151 90 Q198 90 198 137 V202"/>
+    <path d="M222 202 V137 Q222 90 269 90 Q316 90 316 137 V202"/>
 
-        <path d="M35 202 H385"/>
-        <path d="M25 211 H395"/>
-        <path d="M15 220 H405"/>
+    <path d="M135 202 V139 Q135 120 151 120 Q167 120 167 139 V202"/>
+    <path d="M253 202 V139 Q253 120 269 120 Q285 120 285 139 V202"/>
 
-        <path d="M100 212 L110 202 L120 212 L130 202 L140 212 L150 202 L160 212 L170 202 L180 212 L190 202 L200 212 L210 202 L220 212 L230 202 L240 212 L250 202 L260 212 L270 202 L280 212 L290 202 L300 212 L310 202 L320 212"/>
-    </g>
+    <path d="M144 90 Q144 55 210 30 Q276 55 276 90"/>
+    <path d="M158 83 Q158 54 210 39 Q262 54 262 83"/>
+    <path d="M210 30 V15 L216 7 L222 15 V33"/>
 
-    <g fill="#c6a15b">
-        <circle cx="210" cy="15" r="2.5"/>
-        <circle cx="73" cy="24" r="2"/>
-        <circle cx="347" cy="24" r="2"/>
-    </g>
+    <path d="M201 202 V149 Q201 121 210 121 Q219 121 219 149 V202"/>
+
+    <path d="M35 202 H385"/>
+    <path d="M25 211 H395"/>
+    <path d="M15 220 H405"/>
+
+    <path d="M100 212 L110 202 L120 212 L130 202 L140 212 L150 202 L160 212 L170 202 L180 212 L190 202 L200 212 L210 202 L220 212 L230 202 L240 212 L250 202 L260 212 L270 202 L280 212 L290 202 L300 212 L310 202 L320 212"/>
+</g>
+
+<g fill="#c6a15b">
+    <circle cx="210" cy="15" r="2.5"/>
+    <circle cx="73" cy="24" r="2"/>
+    <circle cx="347" cy="24" r="2"/>
+</g>
+
+
 </svg>
 
 <div class="ornament">۞ ✦ ۞</div>
 
 <h1 class="main-title">دعوة عقد قِران وزفاف</h1>
+
 <p class="subtitle">بكل الحب والفرح، نتشرف بدعوتكم لمشاركتنا أجمل لحظات العمر</p>
 
 <div class="names">
@@ -788,47 +1149,48 @@ body::before {
     <span class="name">شيماء</span>
 </div>
 
-<p class="invitation-text">
-    الحمد لله الذي بنعمته تتم الصالحات<br>
-</p>
+<p class="invitation-text">الحمد لله الذي بنعمته تتم الصالحات</p>
 
 <div class="divider">✦</div>
 
 <section aria-label="تفاصيل المناسبة">
     <div class="details">
 
-        <div class="detail">
-            <div class="detail-icon">☾</div>
-            <div class="detail-label">اليوم</div>
-            <div class="detail-value">الجمعة</div>
-        </div>
 
-        <div class="detail">
-            <div class="detail-icon">✧</div>
-            <div class="detail-label">التاريخ</div>
-            <div class="detail-value">٢٠ نوفمبر ٢٠٢٦</div>
-        </div>
-
-        <div class="detail">
-            <div class="detail-icon">◷</div>
-            <div class="detail-label">الوقت</div>
-            <div class="detail-value">من ٣ إلى ٦ مساءً</div>
-        </div>
-
-        <div class="detail">
-            <div class="detail-icon">♧</div>
-            <div class="detail-label">المكان</div>
-            <a class="location-link"
-               href="https://maps.app.goo.gl/6sprsHRfadcPhxWo8"
-               target="_blank"
-               rel="noopener noreferrer">
-                Crystal Palace Hall<br>
-                اتحاد الشرطة الرياضي - القاهرة
-            </a>
-            <div class="location-hint">اضغط على اسم المكان لفتح الخريطة</div>
-        </div>
-
+    <div class="detail">
+        <div class="detail-icon">☾</div>
+        <div class="detail-label">اليوم</div>
+        <div class="detail-value">الجمعة</div>
     </div>
+
+    <div class="detail">
+        <div class="detail-icon">✧</div>
+        <div class="detail-label">التاريخ</div>
+        <div class="detail-value">٢٠ نوفمبر ٢٠٢٦</div>
+    </div>
+
+    <div class="detail">
+        <div class="detail-icon">◷</div>
+        <div class="detail-label">الوقت</div>
+        <div class="detail-value">من ٣ إلى ٦ مساءً</div>
+    </div>
+
+    <div class="detail">
+        <div class="detail-icon">♧</div>
+        <div class="detail-label">المكان</div>
+        <a class="location-link"
+           href="https://maps.app.goo.gl/6sprsHRfadcPhxWo8"
+           target="_blank"
+           rel="noopener noreferrer">
+            Crystal Palace Hall<br>
+            اتحاد الشرطة الرياضي - القاهرة
+        </a>
+        <div class="location-hint">اضغط على اسم المكان لفتح الخريطة</div>
+    </div>
+
+</div>
+
+
 </section>
 
 <div class="divider">۞</div>
@@ -836,27 +1198,30 @@ body::before {
 <section aria-label="العد التنازلي">
     <h2 class="countdown-title">باقي على فرحتنا</h2>
 
-    <div class="countdown">
-        <div class="time-box">
-            <span class="time-number" id="seconds">000</span>
-            <span class="time-label">ثانية</span>
-        </div>
 
-        <div class="time-box">
-            <span class="time-number" id="minutes">00</span>
-            <span class="time-label">دقيقة</span>
-        </div>
-
-        <div class="time-box">
-            <span class="time-number" id="hours">00</span>
-            <span class="time-label">ساعة</span>
-        </div>
-
-        <div class="time-box">
-            <span class="time-number" id="days">00</span>
-            <span class="time-label">يوم</span>
-        </div>
+<div class="countdown">
+    <div class="time-box">
+        <span class="time-number" id="seconds">٠٠</span>
+        <span class="time-label">ثانية</span>
     </div>
+
+    <div class="time-box">
+        <span class="time-number" id="minutes">٠٠</span>
+        <span class="time-label">دقيقة</span>
+    </div>
+
+    <div class="time-box">
+        <span class="time-number" id="hours">٠٠</span>
+        <span class="time-label">ساعة</span>
+    </div>
+
+    <div class="time-box">
+        <span class="time-number" id="days">٠٠</span>
+        <span class="time-label">يوم</span>
+    </div>
+</div>
+
+
 </section>
 
 <div class="buttons">
@@ -864,104 +1229,119 @@ body::before {
        href="https://maps.app.goo.gl/6sprsHRfadcPhxWo8"
        target="_blank"
        rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
         افتح الموقع على الخريطة
     </a>
-    <a class="button calendar-button"
-       href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=%D9%83%D8%AA%D8%A8%20%D9%83%D8%AA%D8%A7%D8%A8%20%D8%B3%D9%87%D9%8A%D9%84%20%D9%88%D8%B4%D9%8A%D9%85%D8%A7%D8%A1&amp;dates=20261120T150000%2F20261120T180000&amp;ctz=Africa%2FCairo&amp;details=%D8%AF%D8%B9%D9%88%D8%A9%20%D9%83%D8%AA%D8%A8%20%D9%83%D8%AA%D8%A7%D8%A8%20%D8%B3%D9%87%D9%8A%D9%84%20%D9%88%D8%B4%D9%8A%D9%85%D8%A7%D8%A1%20-%20%D9%82%D8%B5%D8%B1%20%D9%83%D8%B1%D9%8A%D8%B3%D8%AA%D8%A7%D9%84%20%D8%8C%20%D8%A7%D8%AA%D8%AD%D8%A7%D8%AF%20%D8%A7%D9%84%D8%B4%D8%B1%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%20%D8%A8%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9&amp;location=%D9%82%D8%B5%D8%B1%20%D9%83%D8%B1%D9%8A%D8%B3%D8%AA%D8%A7%D9%84%20-%20%D8%A7%D8%AA%D8%AD%D8%A7%D8%AF%20%D8%A7%D9%84%D8%B4%D8%B1%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9"
-       target="_blank"
-       rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 3v4M8 3v4M3 10h18M8 14h3M8 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        أضف إلى تقويم Google
-    </a>
+
+
+<a class="button calendar-button"
+   href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=%D8%B9%D9%82%D8%AF%20%D9%82%D9%90%D8%B1%D8%A7%D9%86%20%D9%88%D8%B2%D9%81%D8%A7%D9%81%20%D8%B3%D9%87%D9%8A%D9%84%20%D9%88%D8%B4%D9%8A%D9%85%D8%A7%D8%A1&amp;dates=20261120T150000%2F20261120T180000&amp;ctz=Africa%2FCairo&amp;details=%D8%AF%D8%B9%D9%88%D8%A9%20%D8%B9%D9%82%D8%AF%20%D9%82%D9%90%D8%B1%D8%A7%D9%86%20%D9%88%D8%B2%D9%81%D8%A7%D9%81%20%D8%B3%D9%87%D9%8A%D9%84%20%D9%88%D8%B4%D9%8A%D9%85%D8%A7%D8%A1&amp;location=%D9%82%D8%B5%D8%B1%20%D9%83%D8%B1%D9%8A%D8%B3%D8%AA%D8%A7%D9%84%20-%20%D8%A7%D8%AA%D8%AD%D8%A7%D8%AF%20%D8%A7%D9%84%D8%B4%D8%B1%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%D9%8A%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9"
+   target="_blank"
+   rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M16 3v4M8 3v4M3 10h18M8 14h3M8 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    أضف إلى تقويم Google
+</a>
+
+
 </div>
 
 <!-- RSVP -->
+
 <section class="rsvp-section" id="rsvp">
 
-    <div class="rsvp-heading">
-        <div class="rsvp-ornament">۞ ✦ ۞</div>
-        <h2>تأكيد الحضور ومباركة العروسين</h2>
-        <p>يسعدنا أن تشاركونا فرحتنا، وننتظر كلماتكم الطيبة ودعواتكم الجميلة</p>
+
+<div class="rsvp-heading">
+    <div class="rsvp-ornament">۞ ✦ ۞</div>
+    <h2>تأكيد الحضور ومباركة العروسين</h2>
+    <p>يسعدنا أن تشاركونا فرحتنا، وننتظر كلماتكم الطيبة ودعواتكم الجميلة</p>
+</div>
+
+<form id="rsvpForm" class="rsvp-form">
+
+    <div class="rsvp-field">
+        <label for="guestName">الاسم الكريم <span>*</span></label>
+        <input
+            type="text"
+            id="guestName"
+            name="guestName"
+            placeholder="اكتب اسمك الكريم هنا"
+            maxlength="100"
+            autocomplete="name"
+            required>
+        <small>يرجى كتابة الاسم لإتمام تأكيد الحضور</small>
     </div>
 
-    <form id="rsvpForm" class="rsvp-form">
+    <div class="rsvp-field">
+        <label>هل ستشرفنا بالحضور؟</label>
 
-        <div class="rsvp-field">
-            <label for="guestName">الاسم الكريم <span>*</span></label>
-            <input
-                type="text"
-                id="guestName"
-                name="guestName"
-                placeholder="اكتب اسمك الكريم هنا"
-                maxlength="100"
-                autocomplete="name"
-                required
-            >
-            <small>يرجى كتابة الاسم لإتمام تأكيد الحضور</small>
-        </div>
+        <div class="attendance-options">
 
-        <div class="rsvp-field">
-            <label>هل ستشرفنا بالحضور؟</label>
-
-            <div class="attendance-options">
-
-                <label class="attendance-option">
-                    <input type="radio" name="attendanceStatus" value="سأحضر بكل سرور" checked>
-                    <span class="attendance-card">
-                        <span class="attendance-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3.5 5.5 7l3 3M16 3.5 18.5 7l-3 3M8 3.5h8M5.5 7h13M8.5 10l-2 3.5a5.8 5.8 0 0 0 11 0L15.5 10M8.5 10h7"/><circle cx="12" cy="7" r="2.4"/></svg></span>
-                        <span>سأحضر بكل سرور</span>
+            <label class="attendance-option">
+                <input type="radio" name="attendanceStatus" value="سأحضر بكل سرور" checked>
+                <span class="attendance-card">
+                    <span class="attendance-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M8 3.5 5.5 7l3 3M16 3.5 18.5 7l-3 3M8 3.5h8M5.5 7h13M8.5 10l-2 3.5a5.8 5.8 0 0 0 11 0L15.5 10M8.5 10h7"/>
+                            <circle cx="12" cy="7" r="2.4"/>
+                        </svg>
                     </span>
-                </label>
-
-                <label class="attendance-option">
-                    <input type="radio" name="attendanceStatus" value="أعتذر لعدم التمكن من الحضور">
-                    <span class="attendance-card">
-                        <span class="attendance-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.5 8.7c0 4.8-8.5 10-8.5 10s-8.5-5.2-8.5-10A4.6 4.6 0 0 1 12 6.4a4.6 4.6 0 0 1 8.5 2.3Z"/></svg></span>
-                        <span>أعتذر عن الحضور</span>
-                    </span>
-                </label>
-
-            </div>
-        </div>
-
-        <div class="rsvp-field">
-            <label for="guestMessage">
-                كلمة تهنئة للعروسين <span class="optional">(اختياري)</span>
+                    <span>سأحضر بكل سرور</span>
+                </span>
             </label>
 
-            <textarea
-                id="guestMessage"
-                name="guestMessage"
-                rows="4"
-                maxlength="1000"
-                placeholder="بارك الله لكما وبارك عليكما وجمع بينكما في خير..."
-            ></textarea>
+            <label class="attendance-option">
+                <input type="radio" name="attendanceStatus" value="أعتذر لعدم التمكن من الحضور">
+                <span class="attendance-card">
+                    <span class="attendance-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20.5 8.7c0 4.8-8.5 10-8.5 10s-8.5-5.2-8.5-10A4.6 4.6 0 0 1 12 6.4a4.6 4.6 0 0 1 8.5 2.3Z"/>
+                        </svg>
+                    </span>
+                    <span>أعتذر عن الحضور</span>
+                </span>
+            </label>
+
         </div>
-
-        <button type="submit" id="sendWhatsAppBtn" class="rsvp-submit">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M20.52 3.48A11.8 11.8 0 0 0 12.08 0C5.5 0 .15 5.35.15 11.93c0 2.1.55 4.16 1.6 5.97L.05 24l6.25-1.64a11.9 11.9 0 0 0 5.78 1.48h.01c6.58 0 11.93-5.35 11.93-11.93 0-3.18-1.24-6.17-3.5-8.43ZM12.09 21.8h-.01a9.86 9.86 0 0 1-5.02-1.37l-.36-.21-3.71.97.99-3.62-.23-.37a9.82 9.82 0 0 1-1.51-5.27c0-5.44 4.42-9.86 9.86-9.86 2.63 0 5.1 1.03 6.96 2.89a9.8 9.8 0 0 1 2.89 6.97c0 5.44-4.42 9.87-9.86 9.87Zm5.41-7.39c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.23-.65.08-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.09 4.49.71.31 1.26.5 1.69.64.71.23 1.36.2 1.87.12.57-.08 1.75-.71 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35Z"/>
-            </svg>
-
-            <span>تأكيد وإرسال عبر واتساب</span>
-            <span class="submit-arrow">←</span>
-        </button>
-
-        <p class="rsvp-note">
-            ستُفتح محادثة واتساب برسالتك جاهزة للإرسال
-        </p>
-
-    </form>
-
-    <div id="rsvpSuccessCard" class="rsvp-success" hidden>
-        <div class="success-icon">✓</div>
-        <h3>شكرًا لمشاركتنا فرحتنا</h3>
-        <p id="rsvpSuccessName"></p>
-        <p class="success-instruction">
-           
-        </p>
     </div>
+
+    <div class="rsvp-field">
+        <label for="guestMessage">
+            كلمة تهنئة للعروسين <span class="optional">(اختياري)</span>
+        </label>
+
+        <textarea
+            id="guestMessage"
+            name="guestMessage"
+            rows="4"
+            maxlength="1000"
+            placeholder="بارك الله لكما وبارك عليكما وجمع بينكما في خير..."></textarea>
+    </div>
+
+    <button type="submit" id="sendWhatsAppBtn" class="rsvp-submit">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.52 3.48A11.8 11.8 0 0 0 12.08 0C5.5 0 .15 5.35.15 11.93c0 2.1.55 4.16 1.6 5.97L.05 24l6.25-1.64a11.9 11.9 0 0 0 5.78 1.48h.01c6.58 0 11.93-5.35 11.93-11.93 0-3.18-1.24-6.17-3.5-8.43ZM12.09 21.8h-.01a9.86 9.86 0 0 1-5.02-1.37l-.36-.21-3.71.97.99-3.62-.23-.37a9.82 9.82 0 0 1-1.51-5.27c0-5.44 4.42-9.86 9.86-9.86 2.63 0 5.1 1.03 6.96 2.89a9.8 9.8 0 0 1 2.89 6.97c0 5.44-4.42 9.87-9.86 9.87Zm5.41-7.39c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.23-.65.08-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.09 4.49.71.31 1.26.5 1.69.64.71.23 1.36.2 1.87.12.57-.08 1.75-.71 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35Z"/>
+        </svg>
+        <span>تأكيد وإرسال عبر واتساب</span>
+        <span class="submit-arrow">←</span>
+    </button>
+
+    <p class="rsvp-note">ستُفتح محادثة واتساب برسالتك جاهزة للإرسال</p>
+
+</form>
+
+<div id="rsvpSuccessCard" class="rsvp-success" hidden>
+    <div class="success-icon">✓</div>
+    <h3>شكرًا لمشاركتنا فرحتنا</h3>
+    <p id="rsvpSuccessName"></p>
+    <p class="success-instruction"></p>
+</div>
+
 
 </section>
 
@@ -971,7 +1351,6 @@ body::before {
 </div>
 
 <div class="footer-ornament">❦ ✦ ❦</div>
-
 
 </article>
 </main>
@@ -983,9 +1362,10 @@ body::before {
 
 const EVENT_TITLE = "عقد قِران وزفاف سهيل وشيماء";
 const MAP_URL = "https://maps.app.goo.gl/6sprsHRfadcPhxWo8";
+
 const WHATSAPP_NUMBERS = [
     {
-        name: "سهيل",  
+        name: "سهيل",
         number: "201016913486"
     },
     {
@@ -995,13 +1375,6 @@ const WHATSAPP_NUMBERS = [
 ];
 
 const EVENT_DATE = new Date(2026, 10, 20, 16, 0, 0);
-
-const INVITATION_TEXT =
-    "دعوة عقد قِران وزفاف سهيل وشيماء\n" +
-    "الجمعة 20 نوفمبر 2026\n" +
-    "من الساعة 3 إلى 6 مساءً\n" +
-    "قصر كريستال - اتحاد الشرطة الرياضي - القاهرة\n" +
-    MAP_URL;
 
 /* ==========================================
    COUNTDOWN
@@ -1042,6 +1415,83 @@ updateCountdown();
 setInterval(updateCountdown, 1000);
 
 /* ==========================================
+   INVITATION INTRO + BACKGROUND MUSIC
+========================================== */
+
+(function () {
+    const intro = document.getElementById("invitationIntro");
+    const openButton = document.getElementById("openInvitationBtn");
+    const audio = document.getElementById("backgroundMusic");
+    const page = document.querySelector(".page");
+
+    if (!intro || !openButton || !audio || !page) return;
+
+    audio.volume = 0.65;
+    audio.loop = true;
+
+    let invitationOpened = false;
+
+    document.body.classList.add("invitation-locked");
+    page.style.visibility = "hidden";
+
+    openButton.addEventListener("click", function () {
+        if (invitationOpened) return;
+
+        invitationOpened = true;
+        openButton.disabled = true;
+
+        /*
+         * Start the music directly from the user's click.
+         * Browsers generally permit audio playback after this interaction.
+         */
+        try {
+            const playPromise = audio.play();
+
+            if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(function (error) {
+                    console.warn("Music playback failed:", error);
+                });
+            }
+        } catch (error) {
+            console.warn("Music playback failed:", error);
+        }
+
+        intro.classList.add("opening");
+
+        window.setTimeout(function () {
+            document.body.classList.remove("invitation-locked");
+            document.body.classList.add("invitation-open");
+
+            page.style.visibility = "visible";
+
+            intro.classList.add("intro-hidden");
+
+            window.setTimeout(function () {
+                intro.style.display = "none";
+            }, 1100);
+
+        }, 850);
+    });
+
+    // Pause music when the guest switches away from the page.
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            audio.pause();
+        } else if (invitationOpened) {
+            const playPromise = audio.play();
+
+            if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(function () {});
+            }
+        }
+    });
+
+    window.addEventListener("pagehide", function () {
+        audio.pause();
+    });
+})();
+
+/* ==========================================
    RSVP - WHATSAPP ATTENDANCE CONFIRMATION
 ========================================== */
 
@@ -1052,9 +1502,7 @@ setInterval(updateCountdown, 1000);
     const successCard = document.getElementById("rsvpSuccessCard");
     const successName = document.getElementById("rsvpSuccessName");
 
-    if (!form || !nameInput || !messageInput) {
-        return;
-    }
+    if (!form || !nameInput || !messageInput) return;
 
     nameInput.addEventListener("input", function () {
         nameInput.setCustomValidity("");
@@ -1062,6 +1510,7 @@ setInterval(updateCountdown, 1000);
 
     function closeWhatsAppPicker() {
         const existingPicker = document.getElementById("whatsappNumberPicker");
+
         if (existingPicker) {
             existingPicker.remove();
         }
@@ -1073,6 +1522,7 @@ setInterval(updateCountdown, 1000);
         const overlay = document.createElement("div");
         overlay.id = "whatsappNumberPicker";
         overlay.dir = "rtl";
+
         overlay.style.cssText = [
             "position:fixed",
             "inset:0",
@@ -1086,9 +1536,11 @@ setInterval(updateCountdown, 1000);
         ].join(";");
 
         const dialog = document.createElement("div");
+
         dialog.setAttribute("role", "dialog");
         dialog.setAttribute("aria-modal", "true");
         dialog.setAttribute("aria-labelledby", "whatsappPickerTitle");
+
         dialog.style.cssText = [
             "width:min(100%,420px)",
             "padding:25px 20px",
@@ -1120,8 +1572,10 @@ setInterval(updateCountdown, 1000);
 
         WHATSAPP_NUMBERS.forEach(function (contact) {
             const button = document.createElement("button");
+
             button.type = "button";
-            button.textContent = contact.name + " — " + contact.display;
+            button.textContent = contact.name;
+
             button.style.cssText = [
                 "display:block",
                 "width:100%",
@@ -1138,13 +1592,6 @@ setInterval(updateCountdown, 1000);
                 "cursor:pointer"
             ].join(";");
 
-            button.addEventListener("mouseenter", function () {
-                button.style.background = "linear-gradient(135deg,#20764f,#104832)";
-            });
-            button.addEventListener("mouseleave", function () {
-                button.style.background = "linear-gradient(135deg,#176343,#0a3928)";
-            });
-
             button.addEventListener("click", function () {
                 const whatsappURL =
                     "https://wa.me/" +
@@ -1160,7 +1607,9 @@ setInterval(updateCountdown, 1000);
 
                 successName.textContent =
                     "أهلاً بك يا " + guestName + "، شكرًا لمشاركتنا فرحتنا ❤️";
+
                 successCard.hidden = false;
+
                 closeWhatsAppPicker();
             });
 
@@ -1168,8 +1617,10 @@ setInterval(updateCountdown, 1000);
         });
 
         const cancelButton = document.createElement("button");
+
         cancelButton.type = "button";
         cancelButton.textContent = "إلغاء";
+
         cancelButton.style.cssText = [
             "margin-top:5px",
             "padding:9px 22px",
@@ -1181,6 +1632,7 @@ setInterval(updateCountdown, 1000);
             "font-size:13px",
             "cursor:pointer"
         ].join(";");
+
         cancelButton.addEventListener("click", closeWhatsAppPicker);
         dialog.appendChild(cancelButton);
 
@@ -1192,7 +1644,9 @@ setInterval(updateCountdown, 1000);
 
         overlay.appendChild(dialog);
         document.body.appendChild(overlay);
+
         const firstButton = dialog.querySelector("button");
+
         if (firstButton) {
             firstButton.focus();
         }
@@ -1231,8 +1685,7 @@ setInterval(updateCountdown, 1000);
             guestMessage || "بارك الله لكما وبارك عليكما وجمع بينكما في خير."
         ];
 
-        const whatsappMessage = messageLines.join("\n");
-        showWhatsAppPicker(whatsappMessage, guestName);
+        showWhatsAppPicker(messageLines.join("\n"), guestName);
     });
 })();
 
@@ -1269,7 +1722,9 @@ setInterval(updateCountdown, 1000);
 
         particles = Array.from(
             { length: particleCount },
-            () => createParticle(true)
+            function () {
+                return createParticle(true);
+            }
         );
     }
 
@@ -1329,70 +1784,6 @@ setInterval(updateCountdown, 1000);
     resizeCanvas();
     animate();
 })();
-
-/* ==========================================
-   BACKGROUND MUSIC - MP3
-========================================== */
-
-(function () {
-    const audio = document.getElementById("backgroundMusic");
-    if (!audio) return;
-
-    audio.volume = 0.65;
-    audio.loop = true;
-
-    let userInteracted = false;
-
-    function tryPlayMusic() {
-        if (document.hidden || !audio.paused) return;
-
-        const attempt = audio.play();
-
-        if (attempt && typeof attempt.catch === "function") {
-            attempt.catch(function () {
-                // Browser may require a permitted user interaction.
-            });
-        }
-    }
-
-    // Try to start immediately.
-    tryPlayMusic();
-
-    // Retry on touch, scrolling, clicking, or keyboard interaction.
-    function onFirstInteraction() {
-        userInteracted = true;
-        tryPlayMusic();
-    }
-
-    document.addEventListener("touchstart", onFirstInteraction, {
-        passive: true
-    });
-
-    document.addEventListener("scroll", onFirstInteraction, {
-        passive: true
-    });
-
-    document.addEventListener("pointerdown", onFirstInteraction, {
-        passive: true
-    });
-
-    document.addEventListener("keydown", onFirstInteraction);
-
-    // Stop the music when the invitation is no longer visible.
-    document.addEventListener("visibilitychange", function () {
-        if (document.hidden) {
-            audio.pause();
-        } else if (userInteracted) {
-            tryPlayMusic();
-        }
-    });
-
-    // Stop playback when navigating away.
-    window.addEventListener("pagehide", function () {
-        audio.pause();
-    });
-})();
-
 </script>
 
 </body>
